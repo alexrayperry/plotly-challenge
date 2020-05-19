@@ -1,4 +1,4 @@
-
+///////////// DROP DOWN VALUES /////////////////////
 
 var idSelect = d3.select("#selDataset");
 
@@ -20,21 +20,27 @@ d3.json("samples.json").then((data) => {
 
 });
 
-//////////////////////////////////////////////////////
+////////////           UNPACK FUNCTION         ////////////////////////////////
 
 function unpack(rows, index) {
     return rows.map(function(row) {
       return row[index];
     });
   };
+
+///////////////        EVENT TRIGGER VALUE     ////////////////////////////////
   
 
 var userSelection = idSelect.property("value");
 
+/////////////            BAR CHART AND EVENT LISTENER      ///////////////////////////////
+
 function buildBar () {
     d3.json("samples.json").then(function(data) {
 
-        // Get values from dataset
+        // Get values from dataset from sample_values for values for bar chart
+
+        var userSelection = idSelect.property("value");
 
         var selectionIndex = parseInt(userSelection);
 
@@ -42,42 +48,79 @@ function buildBar () {
 
         var sampleValues = Object.values(sampleSelection);
 
-        var chartValues = sampleValues[2]
+        var sortedVaules = sampleValues[2]
 
-        console.log(chartValues);
+        var xReversed = sortedVaules.slice(0, 10);
+
+        var x = xReversed.reverse();
+
+        // Get values from dataset from otu_ids for labels for bar chart
+
+        var chartLabels = sampleValues[1]
+
+        var slicedLabels = chartLabels.slice(0, 10);
+
+        var yReversed = slicedLabels.reverse();
+
+        var y = yReversed.map(item => `OTU ${item}`);
+
+         // Get values from dataset from otu_labels for hovertext for bar chart
+
+        var hoverLabels = sampleValues[3];
+
+        var textReversed = hoverLabels.slice(0, 10);
+
+        var text = textReversed.reverse();
+
+        var trace = {
+            x: x,
+            y: y,
+            text: text,
+            type: "bar",
+            orientation: 'h'
+        };
+
+        var data = [trace];
+
+        var layout = {
+            title: "Bar Chart"
+        };
+
+        Plotly.newPlot("bar", data, layout);
+
         });
     };
    
-    buildBar ();
+d3.selectAll("#selDataset").on("change", buildBar);
+////////////////////////////////////////////////////////////////
 
-    //     var trace = {
-    //         x: 
-    //         y:
-    //         type: "bar"
-    //         orientation: 'n'
-    //     };
+var panelArea = d3.select("#sample-metadata");
 
-    //     var data = [trace];
-
-    //     var layout = {
-    //         title: "Bar Chart"
-    //     };
-
-    //     Plotly.newPlot("plot", data, layout);
-
-    // }
+var addList = panelArea.append("ul").attr("class", "list-unstyled");
 
 
+function buildPanel () {
+    d3.json("samples.json").then(function(data) {
 
+        var userSelection = idSelect.property("value");
 
-//????????????????Maybe pass selection through a switch.
+        var selectionIndex = parseInt(userSelection);
 
-// function unpack(rows, index) {
-//     return rows.map(function(row) {
-//         return row[index];
-//     });
-// };
+        var sampleSelection = data.metadata[selectionIndex];
 
-// function dataRequest() {
-//     d3.json(data)
-// 
+        addList.html("");
+
+        Object.entries(sampleSelection).forEach(([key, value]) => {
+
+            var addItem = addList.append("li");
+
+            addItem.text(`${key}: ${value}`);
+        });
+
+        // console.log(sampleSelection);
+
+    });
+};
+
+d3.selectAll("#selDataset").on("change", buildPanel);
+// how to make an event selector run multiple functions
