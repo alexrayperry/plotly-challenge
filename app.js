@@ -91,7 +91,9 @@ function buildBar () {
         });
     };
    
-d3.selectAll("#selDataset").on("change", buildBar);
+// d3.selectAll("#selDataset").on("change", buildBar);
+// d3.selectAll("#selDataset").on("change", buildPanel);
+
 ////////////////////////////////////////////////////////////////
 
 var panelArea = d3.select("#sample-metadata");
@@ -122,5 +124,16 @@ function buildPanel () {
     });
 };
 
-d3.selectAll("#selDataset").on("change", buildPanel);
+function test() {
+    console.log("ale")
+};
+
+function callAll() {
+    buildBar();
+    buildPanel();
+    test();
+};
+
+d3.selectAll("#selDataset").on("change", callAll);
+
 // how to make an event selector run multiple functions
