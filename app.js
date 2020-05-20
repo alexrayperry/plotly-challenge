@@ -20,6 +20,8 @@ d3.json("samples.json").then((data) => {
 
 });
 
+
+
 ////////////           UNPACK FUNCTION         ////////////////////////////////
 
 function unpack(rows, index) {
@@ -90,11 +92,67 @@ function buildBar () {
 
         });
     };
-   
-// d3.selectAll("#selDataset").on("change", buildBar);
-// d3.selectAll("#selDataset").on("change", buildPanel);
+//////////////        BUBBLE CHART            ////////////////////////////
 
-////////////////////////////////////////////////////////////////
+function buildBubble () {
+    d3.json("samples.json").then(function(data) {
+
+        // Get X Values
+
+        var userSelection = idSelect.property("value");
+
+        var selectionIndex = parseInt(userSelection);
+
+        var sampleSelection = data.samples[selectionIndex];
+
+        var sampleValues = Object.values(sampleSelection);
+
+        var xValues = sampleValues[1];
+
+        // Get Y Values
+
+        var yValues = sampleValues[2];
+
+        // Get Marker Size Values
+
+        var markerSize = sampleValues[2];
+
+        // Get Values for Marker Colors
+
+
+        // Get Text Values
+
+        var textValues = sampleValues[3];
+
+        console.log();
+
+        var trace = {
+            x: xValues,
+            y: yValues,
+            text: textValues,
+            mode: "markers",
+            marker: {
+                size: markerSize,
+                sizemode: 'area'
+            }
+        };
+
+        var data = [trace];
+
+        var layout = {
+            title: "Bubble Chart"
+        };
+
+        Plotly.newPlot("bubble", data, layout);
+
+    });
+
+};
+
+
+   
+
+//////////////         PANEL INFO              /////////////////////////
 
 var panelArea = d3.select("#sample-metadata");
 
@@ -124,14 +182,13 @@ function buildPanel () {
     });
 };
 
-function test() {
-    console.log("ale")
-};
+////////////////////////////////////////////////////////////
+
 
 function callAll() {
     buildBar();
     buildPanel();
-    test();
+    buildBubble();
 };
 
 d3.selectAll("#selDataset").on("change", callAll);
