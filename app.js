@@ -119,6 +119,7 @@ function buildBubble () {
 
         // Get Values for Marker Colors
 
+        var colorValues = sampleValues[1];
 
         // Get Text Values
 
@@ -133,7 +134,11 @@ function buildBubble () {
             mode: "markers",
             marker: {
                 size: markerSize,
-                sizemode: 'area'
+                // sizemode: 'area',
+                transforms: [{ type: "groupby", groups: colorValues }],
+                sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
+                // sizemin: Math.max(markerSize),
+                // sizemode: Math.min(markerSize)
             }
         };
 
