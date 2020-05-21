@@ -103,7 +103,7 @@ initPanel();
 function initBubble () {
     d3.json("samples.json").then(function(data) {
 
-        // Get X Values
+        // Get X Values from otu_ids data
 
         var sampleSelection = data.samples[0];
 
@@ -111,23 +111,21 @@ function initBubble () {
 
         var xValues = sampleValues[1];
 
-        // Get Y Values
+        // Get Y Values from Sample Values
 
         var yValues = sampleValues[2];
 
-        // Get Marker Size Values
+        // Get Marker Size Values Sample Values
 
         var markerSize = sampleValues[2];
 
-        // Get Values for Marker Colors
+        // Get Values for Marker Colors from otu_ids 
 
         var colorValues = sampleValues[1];
 
-        // Get Text Values
+        // Get Text Values from out_labels
 
         var textValues = sampleValues[3];
-
-        console.log();
 
         var trace = {
             x: xValues,
@@ -136,9 +134,11 @@ function initBubble () {
             mode: "markers",
             marker: {
                 size: markerSize,
+                color: colorValues,
+                colorscale: "Earth",
                 // sizemode: 'area',
-                transforms: [{ type: "groupby", groups: colorValues }],
-                sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
+                // transforms: [{ type: "groupby", groups: colorValues }],
+                // sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
                 // sizemin: Math.max(markerSize),
                 // sizemode: Math.min(markerSize)
             }
@@ -147,7 +147,11 @@ function initBubble () {
         var data = [trace];
 
         var layout = {
-            title: "Bubble Chart"
+            title: "Bubble Chart",
+            margin: {t:0},
+            hovermode: "closest",
+            xaxis: {title: "OTU ID"},
+            margin: {t:30}
         };
 
         Plotly.newPlot("bubble", data, layout);
@@ -262,8 +266,7 @@ function buildBubble () {
 
         var textValues = sampleValues[3];
 
-        console.log();
-
+        
         var trace = {
             x: xValues,
             y: yValues,
@@ -271,9 +274,11 @@ function buildBubble () {
             mode: "markers",
             marker: {
                 size: markerSize,
+                color: colorValues,
+                colorscale: "Earth",
                 // sizemode: 'area',
-                transforms: [{ type: "groupby", groups: colorValues }],
-                sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
+                // transforms: [{ type: "groupby", groups: colorValues }],
+                // sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
                 // sizemin: Math.max(markerSize),
                 // sizemode: Math.min(markerSize)
             }
@@ -282,11 +287,14 @@ function buildBubble () {
         var data = [trace];
 
         var layout = {
-            title: "Bubble Chart"
+            title: "Bubble Chart",
+            margin: {t:0},
+            hovermode: "closest",
+            xaxis: {title: "OTU ID"},
+            margin: {t:30}
         };
 
         Plotly.newPlot("bubble", data, layout);
-
     });
 
 };
