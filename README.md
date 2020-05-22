@@ -23,7 +23,7 @@ I followed the same method as mentioned above to get the data arrays for the Bub
 
 Using d3 I selected the area where the panel info will be appeneded and appended a unordered list element and within that, list elements. I ensured to add a function to clear this data for every instance a user selected a new ID. Lastly, I used the same method as used in the bar char and bubble chart to use the users selection and obtain the corresponding data from the json data via the index value of the test subject ID. 
 
-## EVENT LISTENER 
+## Event Listener 
 
 The last step was to create a function that would run all three of the aforemntioned functions and then run that new function through the event listener that would listen for a change in the selected test subject ID from the drop down. With all the steps completed, the charts and panel on the dashboard now display data corresponding to the test subject ID selected by the user. 
 
