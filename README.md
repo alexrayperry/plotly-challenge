@@ -4,6 +4,9 @@ In this assignment, I built an interactive dashboard to explore  [Belly Button B
 
 The dataset reveals that a small handful of microbial species (also called operational taxonomic units, or OTUs, in the study) were present in more than 70% of people, while the rest were relatively rare.
 
+Check out my dashboard here!
+[Belly Button Biodiversity Dashboard](https://alexrayperry.github.io/plotly-challenge/)
+
 ![Bacteria](bacteria.png)
 
 
