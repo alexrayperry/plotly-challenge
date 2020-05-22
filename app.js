@@ -1,13 +1,18 @@
-///////////// DROP DOWN VALUES /////////////////////
+///////////// DROP DOWN OPTIONS /////////////////////
 
+// Set variable to select where data should go
 var idSelect = d3.select("#selDataset");
 
+// Use d3 to read in json data and get the id's from the names object in the JSON Data
 d3.json("samples.json").then((data) => {
 
     console.log(data);
 
     var info = data.names;
 
+    // Loop through the names list to append/nest Option elements to the html under the select element,
+    // append the name (or rather ID) from the list as text to that option element, and append a value attribute with 
+    // the index from each name in the list to the value attribute. 
     info.forEach((name, index) => {
        
         var idSelection = idSelect.append("option");
@@ -20,22 +25,30 @@ d3.json("samples.json").then((data) => {
 
 });
 
-//////////////         INIT FUNCTION              /////////////////////////
+//////////////         INIT BAR FUNCTION              /////////////////////////
+
+// Initiailize function to set first bar chart to be displayed when opening the webpage;
+// set to index 0 in the samples object. 
 
 function initBar() {
     d3.json("samples.json").then(function(data) {
 
+        // select index 0 in the Sample data which is ID 940
         var sampleSelection = data.samples[0];
 
+        // get lists of values from the objects nest under data.sample[0]
         var sampleValues = Object.values(sampleSelection);
 
-        var sortedVaules = sampleValues[2]
+        // get Sample Values using index 2 of new array of lists created in the previous step.
+        var sortedValues = sampleValues[2]
 
-        var xReversed = sortedVaules.slice(0, 10);
+        // Slice the list of Sample Values to give us the top 10
+        var xReversed = sortedValues.slice(0, 10);
 
+        // Reverse the list so that when plottin the bar graph, it will plot the largest value on top.
         var x = xReversed.reverse();
 
-        // Get values from dataset from otu_ids for labels for bar chart
+        // Similar to the aforementioned step, get the Chart Labels (OTUs)
 
         var chartLabels = sampleValues[1]
 
@@ -43,9 +56,10 @@ function initBar() {
 
         var yReversed = slicedLabels.reverse();
 
+        // Create a new array with the OTU id as a string and with OTU in the string my using the map function.
         var y = yReversed.map(item => `OTU ${item}`);
 
-         // Get values from dataset from otu_labels for hovertext for bar chart
+        // Get values from dataset from otu_labels for hovertext for bar chart
 
         var hoverLabels = sampleValues[3];
 
@@ -53,6 +67,7 @@ function initBar() {
 
         var text = textReversed.reverse();
 
+        // Plot the Horizontal Bar Chart
         var trace = {
             x: x,
             y: y,
@@ -64,7 +79,7 @@ function initBar() {
         var data = [trace];
 
         var layout = {
-            title: "Bar Chart"
+            title: "Top 10 OTUs"
         };
 
         Plotly.newPlot("bar", data, layout);
@@ -74,29 +89,6 @@ function initBar() {
 };
 
 initBar();
-
-///////////////         INIT PANEL        //////////////////////////////////
-
-
-function initPanel () {
-    d3.json("samples.json").then(function(data) {
-
-        var sampleSelection = data.metadata[0];
-
-        addList.html("");
-
-        Object.entries(sampleSelection).forEach(([key, value]) => {
-
-            var addItem = addList.append("li");
-
-            addItem.text(`${key}: ${value}`);
-        });
-
-    });
-};
-
-initPanel();
-
 
 ////////////////////          INIT BUBBLE                /////////////////////
 
@@ -127,6 +119,7 @@ function initBubble () {
 
         var textValues = sampleValues[3];
 
+        // Plot Bubble Chart
         var trace = {
             x: xValues,
             y: yValues,
@@ -135,19 +128,14 @@ function initBubble () {
             marker: {
                 size: markerSize,
                 color: colorValues,
-                colorscale: "Earth",
-                // sizemode: 'area',
-                // transforms: [{ type: "groupby", groups: colorValues }],
-                // sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
-                // sizemin: Math.max(markerSize),
-                // sizemode: Math.min(markerSize)
+                colorscale: "Earth"
             }
         };
 
         var data = [trace];
 
         var layout = {
-            title: "Bubble Chart",
+            title: "OTUs per Sample",
             margin: {t:0},
             hovermode: "closest",
             xaxis: {title: "OTU ID"},
@@ -163,35 +151,58 @@ function initBubble () {
 initBubble ();
 
 
-////////////           UNPACK FUNCTION         ////////////////////////////////
+///////////////         INIT PANEL        //////////////////////////////////
 
-function unpack(rows, index) {
-    return rows.map(function(row) {
-      return row[index];
+// use d3 to select HTML area where the panel info will be appeneded and append a unordered list elements.
+var panelArea = d3.select("#sample-metadata");
+
+var addList = panelArea.append("ul").attr("class", "list-unstyled");
+
+
+function initPanel () {
+    d3.json("samples.json").then(function(data) {
+
+        // I used the index value of 0 to present data realted to ID 940
+        // in the metadata object when the webpage loads.
+        var sampleSelection = data.metadata[0];
+
+        // Clear any prior info in the panel elements.
+        addList.html("");
+
+        // Loop through the keys an values of the sample selection and append them as text to list elements.
+        Object.entries(sampleSelection).forEach(([key, value]) => {
+
+            var addItem = addList.append("li");
+
+            addItem.text(`${key}: ${value}`);
+        });
+
     });
-  };
+};
 
-///////////////        EVENT TRIGGER VALUE     ////////////////////////////////
-  
+initPanel();
 
-var userSelection = idSelect.property("value");
 
-/////////////            BAR CHART AND EVENT LISTENER      ///////////////////////////////
+
+/////////////            BAR CHART FUNCTION FOR EVENT LISTENER      ///////////////////////////////
 
 function buildBar () {
     d3.json("samples.json").then(function(data) {
 
-        // Get values from dataset from sample_values for values for bar chart
+        // Get the "value" attribute from the user's selection, which is equivalent to the index 
+        // position of the selected ID in the "samples" object of the json data.
 
         var userSelection = idSelect.property("value");
 
+        // Change the selection value from a string to integer
         var selectionIndex = parseInt(userSelection);
 
+        // Apply the selected index number to select the specific sample/ID and repeat process from init fumction. 
         var sampleSelection = data.samples[selectionIndex];
 
         var sampleValues = Object.values(sampleSelection);
 
-        var sortedVaules = sampleValues[2]
+        var sortedVaules = sampleValues[2];
 
         var xReversed = sortedVaules.slice(0, 10);
 
@@ -226,19 +237,19 @@ function buildBar () {
         var data = [trace];
 
         var layout = {
-            title: "Bar Chart"
+            title: "Top 10 OTUs"
         };
 
         Plotly.newPlot("bar", data, layout);
 
         });
     };
-//////////////        BUBBLE CHART            ////////////////////////////
+//////////////        BUBBLE CHART FUNCTION FOR EVENT LISTENER           ////////////////////////////
 
 function buildBubble () {
     d3.json("samples.json").then(function(data) {
 
-        // Get X Values
+        // Get X Values, same method as previously mentioned function.
 
         var userSelection = idSelect.property("value");
 
@@ -266,7 +277,7 @@ function buildBubble () {
 
         var textValues = sampleValues[3];
 
-        
+        // Plot bubble chart
         var trace = {
             x: xValues,
             y: yValues,
@@ -275,19 +286,14 @@ function buildBubble () {
             marker: {
                 size: markerSize,
                 color: colorValues,
-                colorscale: "Earth",
-                // sizemode: 'area',
-                // transforms: [{ type: "groupby", groups: colorValues }],
-                // sizeref: 2.0 * Math.max(markerSize) / (Math.max(markerSize**2))
-                // sizemin: Math.max(markerSize),
-                // sizemode: Math.min(markerSize)
+                colorscale: "Earth"
             }
         };
 
         var data = [trace];
 
         var layout = {
-            title: "Bubble Chart",
+            title: "OTUs per Sample",
             margin: {t:0},
             hovermode: "closest",
             xaxis: {title: "OTU ID"},
@@ -300,13 +306,7 @@ function buildBubble () {
 };
 
 
-   
-
-//////////////         PANEL INFO              /////////////////////////
-
-var panelArea = d3.select("#sample-metadata");
-
-var addList = panelArea.append("ul").attr("class", "list-unstyled");
+//////////////       PANEL INFO FUNCTION FOR EVENT LISTENER              /////////////////////////
 
 
 function buildPanel () {
@@ -327,13 +327,12 @@ function buildPanel () {
             addItem.text(`${key}: ${value}`);
         });
 
-        // console.log(sampleSelection);
-
     });
 };
 
-////////////////////////////////////////////////////////////
+///////////////          EVENT LISTENER          //////////////////////////////////
 
+// Create a function to run all 3 functions we previously set up to up date charts based on user selection.
 
 function callAll() {
     buildBar();
@@ -341,6 +340,6 @@ function callAll() {
     buildBubble();
 };
 
-d3.selectAll("#selDataset").on("change", callAll);
+// Create the event listener to listen for a change in the drop down of IDs
 
-// how to make an event selector run multiple functions
+d3.selectAll("#selDataset").on("change", callAll);
